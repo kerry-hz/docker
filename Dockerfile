@@ -20,8 +20,18 @@ RUN apt-get update \
     && apt-get install -y postgresql-$PG_MAJOR-citus-7.4=$CITUS_VERSION \
                           postgresql-$PG_MAJOR-hll=2.10.2.citus-1 \
                           postgresql-$PG_MAJOR-topn=2.0.2 \
+    && apt-get install -y postgresql-server-dev-10 postgresql-10-partman build-essential wget git\
+    && cd /tmp/\
+    && wget -q -O - http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2 | tar jxf -\
+    && cd /tmp/scws-1.2.3/\
+    && ./configure && make install\
+    && cd /tmp/\
+    && git clone https://github.com/amutu/zhparser.git\
+    && cd zhparser/\
+    && make &&  make install\
     && apt-get purge -y --auto-remove curl \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*\
+    && rm /tmp/* -rf
 
 # add citus to default PostgreSQL config
 RUN echo "shared_preload_libraries='citus'" >> /usr/share/postgresql/postgresql.conf.sample
